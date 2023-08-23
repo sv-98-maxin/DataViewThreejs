@@ -1,0 +1,37 @@
+{
+  "name": "data-view-threejs",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --open",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@types/mockjs": "^1.0.7",
+    "axios": "^1.4.0",
+    "d3-geo": "^3.1.0",
+    "echarts": "^5.4.3",
+    "three": "^0.155.0",
+    "vue": "^3.3.4",
+    "wordcloud": "^1.2.2"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/d3-geo": "^3.0.3",
+    "@types/echarts": "^4.9.18",
+    "@types/three": "^0.155.0",
+    "@types/wordcloud": "^1.2.0",
+    "@vitejs/plugin-vue": "^4.2.3",
+    "autoprefixer": "^10.4.15",
+    "less": "^4.2.0",
+    "mockjs": "^1.1.0",
+    "pinia": "^2.1.6",
+    "postcss": "^8.4.27",
+    "tailwindcss": "^3.3.3",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5",
+    "vue-tsc": "^1.8.5"
+  }
+}
