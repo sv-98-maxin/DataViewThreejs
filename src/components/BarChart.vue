@@ -6,14 +6,24 @@
 import { onMounted, ref, computed, watch } from "vue";
 import * as echarts from "echarts";
 import { useStore } from "../store";
+import { barData } from "../mock";
 
 const store = useStore();
 const name = computed(() => store.areaName);
 const container = ref<HTMLElement>();
+const data = ref<[number]>(barData());
 
 watch(name, () => {
+	data.value = barData();
+
 	init();
 });
+watch(data, () => {
+	init();
+});
+setInterval(() => {
+	data.value = barData();
+}, 3000);
 function init() {
 	const chart = echarts.init(container.value);
 	const option = {
@@ -33,7 +43,7 @@ function init() {
 		},
 		series: [
 			{
-				data: [120, 200, 150, 80, 70, 110, 130],
+				data: data.value,
 				type: "bar",
 			},
 		],

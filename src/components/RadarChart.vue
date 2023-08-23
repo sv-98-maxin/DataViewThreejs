@@ -6,14 +6,25 @@
 import * as echarts from "echarts";
 import { onMounted, ref, computed, watch } from "vue";
 import { useStore } from "../store";
+import { radarData } from "../mock";
 
 const store = useStore();
 const name = computed(() => store.areaName);
 const container = ref<HTMLDivElement>();
+const data = ref<[number]>(radarData());
 
 watch(name, () => {
+	data.value = radarData();
+
 	initChart();
 });
+watch(data, () => {
+	initChart();
+});
+
+setInterval(() => {
+	data.value = radarData();
+}, 3000);
 function initChart() {
 	const chart = echarts.init(container.value);
 	const option = {
@@ -49,37 +60,20 @@ function initChart() {
 				{ text: "Chrome", max: 400 },
 			],
 		},
-		series: (function () {
-			var series = [];
-			for (var i = 1; i <= 28; i++) {
-				series.push({
-					type: "radar",
-					symbol: "none",
-					top: "20%",
-					lineStyle: {
-						width: 1,
-					},
-					emphasis: {
-						areaStyle: {
-							color: "rgba(0,250,0,0.3)",
-						},
-					},
-					data: [
-						{
-							value: [
-								(40 - i) * 10,
-								(38 - i) * 4 + 60,
-								i * 5 + 10,
-								i * 9,
-								(i * i) / 2,
-							],
-							name: i + 2000 + "",
-						},
-					],
-				});
-			}
-			return series;
-		})(),
+		series: data.value.map(item => ({
+			type: "radar",
+			symbol: "none",
+			top: "20%",
+			lineStyle: {
+				width: 1,
+			},
+			emphasis: {
+				areaStyle: {
+					color: "rgba(0,250,0,0.3)",
+				},
+			},
+			data: [item],
+		})),
 	};
 	chart.setOption(option);
 }
