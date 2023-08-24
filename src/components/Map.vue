@@ -8,6 +8,7 @@ import {
 	BufferGeometry,
 	CircleGeometry,
 	Clock,
+	Color,
 	DirectionalLight,
 	ExtrudeGeometry,
 	FileLoader,
@@ -37,6 +38,8 @@ import { useStore } from "../store/index.ts";
 const store = useStore();
 // 用于文字旋转动画
 const textGroup = ref<Object3D | null>(null);
+// 是否已有选中的区域
+const isSelectedName = ref<string | undefined>(undefined);
 const container = ref();
 const renderer = new WebGLRenderer({ antialias: true });
 renderer.setClearColor(0xffffff, 0);
@@ -61,7 +64,7 @@ scene.add(directionalLight, hemiLight, ambiLight);
 
 const raycaster = new Raycaster();
 const pointer = new Vector2();
-async function initMapData() {
+function initCamera() {
 	camera = new PerspectiveCamera(
 		45,
 		container.value.clientWidth / container.value.clientHeight,
@@ -72,6 +75,8 @@ async function initMapData() {
 	camera.lookAt(0, 0, 0);
 	camera.rotateX(-Math.PI / 2);
 	control = new OrbitControls(camera, renderer.domElement);
+}
+async function initMapData() {
 	const loader = new FileLoader();
 	const jsonData = await loader.loadAsync(
 		"https://geo.datav.aliyun.com/areas_v3/bound/420100_full.json"
@@ -95,7 +100,7 @@ async function initMapData() {
 		const text = new Mesh(textGeometry, textMaterial);
 		text.rotation.x = Math.PI / 2;
 		text.position.x -= 0.2;
-		text.position.z = 0.3;
+		text.position.z = 0.2;
 		labelPoint.add(text);
 		const point = new CircleGeometry(0.01);
 		const labelMaterial = new MeshBasicMaterial({ color: "#000000" });
@@ -106,7 +111,7 @@ async function initMapData() {
 			properties.center[1],
 		]) as Iterable<number>;
 		labelPoint.add(pointMesh);
-		labelPoint.position.set(x, -y, 0.25);
+		labelPoint.position.set(x, -y, 0.2);
 		labelPoint.visible = false;
 		labelPoint.name = properties.name;
 		scene.add(labelPoint);
@@ -147,6 +152,8 @@ async function initMapData() {
 				metalness: 0.5,
 				roughness: 0,
 				color: "#cc98e2",
+				transparent: true,
+				opacity: 0.5,
 			});
 			const mesh = new Mesh(fill, material);
 			mesh.name = properties.name;
@@ -156,18 +163,21 @@ async function initMapData() {
 		});
 	});
 }
-function onPointerMove(event: PointerEvent) {
+function onPointerDown(event: PointerEvent) {
 	// 将鼠标位置归一化为设备坐标。x 和 y 方向的取值范围是 (-1 to +1)
-
 	const meshes = scene.children;
+	isSelectedName.value = "";
 	meshes.forEach(mesh => {
 		if (mesh.type === "Line") {
 			mesh.position.z = 0.1;
 		} else if (mesh.type === "Group") {
 			mesh.visible = false;
 			textGroup.value = null;
-		} else {
+		} else if (mesh.type === "Mesh") {
 			mesh.scale.set(1, 1, 1);
+			((mesh as Mesh).material as MeshStandardMaterial).color = new Color(
+				"#aabbcc"
+			);
 		}
 	});
 	pointer.x = (event.offsetX / container.value.clientWidth) * 2 - 1;
@@ -179,17 +189,73 @@ function onPointerMove(event: PointerEvent) {
 	);
 	const selectedAreaName = intersects[0]?.object.name;
 	scene.getObjectsByProperty("name", selectedAreaName).forEach(mesh => {
-		console.log(mesh);
 		if (mesh.type === "Line") {
 			mesh.position.z = 0.2;
 		} else if (mesh.type === "Group") {
 			textGroup.value = mesh;
 			mesh.visible = true;
+			mesh.position.z = 0.2;
 		} else {
 			mesh.scale.z = 2;
+			((mesh as Mesh).material as MeshStandardMaterial).color = new Color(
+				"red"
+			);
 		}
 	});
 	store.selectedArea(selectedAreaName ?? "武汉市");
+	isSelectedName.value = selectedAreaName ?? "";
+}
+
+function onPointerMove(event: PointerEvent) {
+	const meshes = scene.children;
+	pointer.x = (event.offsetX / container.value.clientWidth) * 2 - 1;
+	pointer.y = -(event.offsetY / container.value.clientHeight) * 2 + 1;
+	raycaster.setFromCamera(pointer, camera);
+	// 计算物体和射线的焦点
+	const intersects = raycaster.intersectObjects(
+		meshes.filter(item => item.type === "Mesh")
+	);
+	const selectedAreaName = intersects[0]?.object.name;
+	meshes.forEach(mesh => {
+		if (mesh.type === "Line") {
+			// mesh.position.z = 0.1;
+		} else if (mesh.type === "Group") {
+			mesh.visible = false;
+			textGroup.value = null;
+		} else if (mesh.type === "Mesh") {
+			((mesh as Mesh).material as MeshStandardMaterial).color = new Color(
+				"#aabbcc"
+			);
+		}
+	});
+
+	scene.getObjectsByProperty("name", selectedAreaName).forEach(mesh => {
+		console.log(mesh);
+		if (mesh.type === "Line") {
+		} else if (mesh.type === "Group") {
+			textGroup.value = mesh;
+			mesh.visible = true;
+			mesh.position.z = 0.1;
+		} else if (mesh.type === "Mesh") {
+			((mesh as Mesh).material as MeshStandardMaterial).color = new Color(
+				"red"
+			);
+		}
+	});
+	scene.getObjectsByProperty("name", isSelectedName.value).forEach(mesh => {
+		if (mesh.type === "Line") {
+			mesh.position.z = 0.2;
+		} else if (mesh.type === "Group") {
+			textGroup.value = mesh;
+			mesh.visible = true;
+			mesh.position.z = 0.2;
+		} else {
+			mesh.scale.z = 2;
+			((mesh as Mesh).material as MeshStandardMaterial).color = new Color(
+				"red"
+			);
+		}
+	});
 }
 
 function setSize() {
@@ -199,10 +265,11 @@ function setSize() {
 	renderer.setSize(container.value.clientWidth, container.value.clientHeight);
 }
 onMounted(() => {
+	initCamera();
 	initMapData();
 	setSize();
 	container.value.appendChild(renderer.domElement);
-	scene.rotation.x = -Math.PI / 4;
+	scene.rotation.x = -Math.PI / 3;
 	renderer.setAnimationLoop(() => {
 		const delta = clock.getDelta();
 		control.update();
@@ -212,7 +279,8 @@ onMounted(() => {
 		renderer.render(scene, camera);
 	});
 	window.addEventListener("resize", setSize);
-	container.value.addEventListener("pointerdown", onPointerMove);
+	container.value.addEventListener("pointerdown", onPointerDown);
+	container.value.addEventListener("pointermove", onPointerMove);
 });
 </script>
 

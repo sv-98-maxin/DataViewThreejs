@@ -13,6 +13,8 @@ const container = ref<HTMLDivElement>();
 const store = useStore();
 const name = computed(() => store.areaName);
 let data = ref<[pieDataType]>(getPieData());
+const myChart = ref<echarts.ECharts | null>(null);
+
 watch(name, () => {
 	data.value = getPieData();
 	initPie();
@@ -25,7 +27,6 @@ setInterval(() => {
 	data.value = getPieData();
 }, 3000);
 function initPie() {
-	const myChart = echarts.init(container.value);
 	const options = {
 		title: {
 			text: name.value + "xxx数据",
@@ -68,9 +69,10 @@ function initPie() {
 			},
 		],
 	};
-	myChart.setOption(options);
+	myChart.value?.setOption(options);
 }
 onMounted(() => {
+	myChart.value = echarts.init(container.value);
 	initPie();
 });
 </script>

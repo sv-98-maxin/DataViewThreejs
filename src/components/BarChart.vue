@@ -12,6 +12,7 @@ const store = useStore();
 const name = computed(() => store.areaName);
 const container = ref<HTMLElement>();
 const data = ref<[number]>(barData());
+const chart = ref<echarts.ECharts | null>(null);
 
 watch(name, () => {
 	data.value = barData();
@@ -25,7 +26,6 @@ setInterval(() => {
 	data.value = barData();
 }, 3000);
 function init() {
-	const chart = echarts.init(container.value);
 	const option = {
 		title: {
 			text: name.value + "xxx数据",
@@ -48,9 +48,10 @@ function init() {
 			},
 		],
 	};
-	chart.setOption(option);
+	chart.value?.setOption(option);
 }
 onMounted(() => {
+	chart.value = echarts.init(container.value);
 	init();
 });
 </script>

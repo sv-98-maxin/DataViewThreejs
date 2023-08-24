@@ -167,7 +167,7 @@ export function radarData() {
           Mock.Random.integer(0, 400),
 
         ],
-        'name': 2010
+        'name': '2010'
       }, {
         'value': [
           Mock.Random.integer(0, 400),
@@ -177,7 +177,7 @@ export function radarData() {
           Mock.Random.integer(0, 400),
 
         ],
-        'name': 2011
+        'name': '2011'
       }, {
         'value': [
           Mock.Random.integer(0, 400),
@@ -187,7 +187,7 @@ export function radarData() {
           Mock.Random.integer(0, 400),
 
         ],
-        'name': 2012
+        'name': '2012'
       }, {
         'value': [
           Mock.Random.integer(0, 400),
@@ -197,7 +197,7 @@ export function radarData() {
           Mock.Random.integer(0, 400),
 
         ],
-        'name': 2013
+        'name': '2013'
       }, {
         'value': [
           Mock.Random.integer(0, 400),
@@ -207,7 +207,7 @@ export function radarData() {
           Mock.Random.integer(0, 400),
 
         ],
-        'name': 2014
+        'name': '2014'
       }, {
         'value': [
           Mock.Random.integer(0, 400),
@@ -217,7 +217,7 @@ export function radarData() {
           Mock.Random.integer(0, 400),
 
         ],
-        'name': 2015
+        'name': '2015'
       }, {
         'value': [
           Mock.Random.integer(0, 400),
@@ -227,7 +227,7 @@ export function radarData() {
           Mock.Random.integer(0, 400),
 
         ],
-        'name': 2016
+        'name': '2016'
       }, {
         'value': [
           Mock.Random.integer(0, 400),
@@ -237,7 +237,7 @@ export function radarData() {
           Mock.Random.integer(0, 400),
 
         ],
-        'name': 2017
+        'name': '2017'
       }, {
         'value': [
           Mock.Random.integer(0, 400),
@@ -247,7 +247,7 @@ export function radarData() {
           Mock.Random.integer(0, 400),
 
         ],
-        'name': 2018
+        'name': '2018'
       }, {
         'value': [
           Mock.Random.integer(0, 400),
@@ -257,7 +257,7 @@ export function radarData() {
           Mock.Random.integer(0, 400),
 
         ],
-        'name': 2019
+        'name': '2019'
       }, {
         'value': [
           Mock.Random.integer(0, 400),
@@ -267,7 +267,7 @@ export function radarData() {
           Mock.Random.integer(0, 400),
 
         ],
-        'name': 2020
+        'name': '2020'
       }
     ]
   }).list

@@ -12,6 +12,7 @@ const store = useStore();
 const name = computed(() => store.areaName);
 const container = ref<HTMLDivElement>();
 const data = ref<[number]>(radarData());
+const chart = ref<echarts.ECharts | null>(null);
 
 watch(name, () => {
 	data.value = radarData();
@@ -26,7 +27,6 @@ setInterval(() => {
 	data.value = radarData();
 }, 3000);
 function initChart() {
-	const chart = echarts.init(container.value);
 	const option = {
 		title: {
 			text: name.value + "xxx数据",
@@ -39,8 +39,8 @@ function initChart() {
 			bottom: 10,
 			data: (function () {
 				var list = [];
-				for (var i = 1; i <= 28; i++) {
-					list.push(i + 2000 + "");
+				for (var i = 1; i <= 10; i++) {
+					list.push(i + 2009 + "");
 				}
 				return list;
 			})(),
@@ -75,10 +75,11 @@ function initChart() {
 			data: [item],
 		})),
 	};
-	chart.setOption(option);
+	chart.value?.setOption(option);
 }
 
 onMounted(() => {
+	chart.value = echarts.init(container.value);
 	initChart();
 });
 </script>
