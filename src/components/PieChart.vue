@@ -3,77 +3,71 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
-import * as echarts from "echarts";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useStore } from "../store/index.ts";
-// import axios from "axios";
 import { getPieData } from "../mock/index.ts";
-import { pieDataType } from "..";
-const container = ref<HTMLDivElement>();
+
+import { useInitCharts } from "../hooks";
+const container = ref<HTMLElement>();
 const store = useStore();
 const name = computed(() => store.areaName);
-let data = ref<[pieDataType]>(getPieData());
-const myChart = ref<echarts.ECharts | null>(null);
 
-watch(name, () => {
-	data.value = getPieData();
-	initPie();
+const chartOptions = reactive({
+	title: {
+		text: name.value + "xxx数据",
+		left: "center",
+	},
+	tooltip: {
+		trigger: "item",
+	},
+	legend: {
+		top: "10%",
+		left: "center",
+	},
+	series: [
+		{
+			name: "Access From",
+			type: "pie",
+			radius: ["40%", "70%"],
+			top: "10%",
+			avoidLabelOverlap: false,
+			itemStyle: {
+				borderRadius: 10,
+				borderColor: "#fff",
+				borderWidth: 2,
+			},
+			label: {
+				show: false,
+				position: "center",
+			},
+			emphasis: {
+				label: {
+					show: true,
+					fontSize: 40,
+					fontWeight: "bold",
+				},
+			},
+			labelLine: {
+				show: false,
+			},
+			data: getPieData(),
+		},
+	],
 });
-watch(data, () => {
-	initPie();
+
+watch(name, newName => {
+	chartOptions.title.text = newName + "xxx数据";
+});
+watch(chartOptions, () => {
+	useInitCharts(container.value as HTMLElement, chartOptions);
 });
 
 setInterval(() => {
-	data.value = getPieData();
+	chartOptions.series[0].data = getPieData();
 }, 3000);
-function initPie() {
-	const options = {
-		title: {
-			text: name.value + "xxx数据",
-			left: "center",
-		},
-		tooltip: {
-			trigger: "item",
-		},
-		legend: {
-			top: "10%",
-			left: "center",
-		},
-		series: [
-			{
-				name: "Access From",
-				type: "pie",
-				radius: ["40%", "70%"],
-				top: "10%",
-				avoidLabelOverlap: false,
-				itemStyle: {
-					borderRadius: 10,
-					borderColor: "#fff",
-					borderWidth: 2,
-				},
-				label: {
-					show: false,
-					position: "center",
-				},
-				emphasis: {
-					label: {
-						show: true,
-						fontSize: 40,
-						fontWeight: "bold",
-					},
-				},
-				labelLine: {
-					show: false,
-				},
-				data: data.value,
-			},
-		],
-	};
-	myChart.value?.setOption(options);
-}
+
 onMounted(() => {
-	myChart.value = echarts.init(container.value);
-	initPie();
+	useInitCharts(container.value as HTMLElement, chartOptions);
 });
 </script>
 

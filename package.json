@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "description": "three data visualization threejs 3d map  ",
   "scripts": {
     "dev": "vite --open",
     "build": "vue-tsc && vite build",
