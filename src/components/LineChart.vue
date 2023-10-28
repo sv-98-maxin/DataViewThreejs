@@ -53,7 +53,7 @@ const chartOptions = reactive<EChartsCoreOption>({
 });
 
 watch(chartOptions, () => {
-	useInitCharts(container.value as HTMLElement, chartOptions);
+	useInitCharts(container.value!, chartOptions);
 });
 watch(name, newName => {
 	(chartOptions.title as TitleComponentOption).text = newName + "xxx数据";
@@ -62,7 +62,7 @@ setInterval(() => {
 	(chartOptions.series as any)[0].data = lineData();
 }, 3000);
 onMounted(() => {
-	useInitCharts(container.value as HTMLElement, chartOptions);
+	useInitCharts(container.value!, chartOptions);
 });
 </script>
 
